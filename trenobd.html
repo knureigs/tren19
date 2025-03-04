@@ -4,8 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tren before Obdarovanist</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
 </head>
 <body>
-    <h1>Hi!</h1>
+    <label for="latitude">Latitude:</label><input type="text" id="latitude">
+    <label for="longitude">Longitude:</label><input type="text" id="longitude">
+    <label for="accuracy">Accuracy:</label><input type="text" id="accuracy">
+    <div id="map" style="height: 380px;"></div>
+    <script>
+        function success(pos) {
+            console.log(pos.coords);
+            latitude.value = pos.coords.latitude;
+            longitude.value = pos.coords.longitude;
+            accuracy.value = pos.coords.accuracy;
+
+            var map = L.map('map').setView([pos.coords.latitude, pos.coords.longitude], 16);
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+            var circle = L.circle([pos.coords.latitude, pos.coords.longitude], {
+                color: 'red',
+                fillColor: '#f03',
+                fillOpacity: 0.5,
+                radius: pos.coords.accuracy
+            }).addTo(map);
+        }
+
+        function error(err) {
+            console.warn(`ERROR(${err.code}): ${err.message}`);
+        }
+
+        navigator.geolocation.getCurrentPosition(success, error);
+
+    </script>
 </body>
 </html>
